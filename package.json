@@ -9,7 +9,9 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@types/pg": "^8.20.0",
     "prettier": "^3.7.4",
+    "prisma": "^7.8.0",
     "turbo": "^2.10.2",
     "typescript": "5.9.2"
   },
@@ -27,7 +29,13 @@
     "packages/*"
   ],
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@types/cors": "^2.8.19",
     "axios": "^1.18.1",
+    "cors": "^2.8.6",
+    "https-proxy-agent": "^9.1.0",
+    "pg": "^8.22.0",
     "sonner": "^2.0.7"
   }
 }
