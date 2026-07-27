@@ -53,13 +53,18 @@ export class DeepgramSTT implements SpeechToText {
 
         console.log(msg);
 
-        if (msg.type === "Results") {
-          const transcript = msg.channel?.alternatives?.[0]?.transcript;
+        if (msg.type !== "Results") return;
 
-          if (transcript) {
-            this.transcriptCallback?.(transcript);
-          }
-        }
+        const transcript = msg.channel?.alternatives?.[0]?.transcript;
+
+        if (!transcript) return;
+
+        //ignore interim hypothesis
+        if (!msg.is_final) return;
+
+        console.log("Final transcription:", transcript);
+
+        this.transcriptCallback?.(transcript);
       });
     });
   }

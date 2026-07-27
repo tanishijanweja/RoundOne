@@ -71,8 +71,16 @@ export function Interview() {
       try {
         const message = JSON.parse(event.data);
 
-        if (message.type === "transcript") {
-          console.log("Transcript:", message.text);
+        switch (message.type) {
+          case "transcript":
+            console.log("Transcript:", message.text);
+            break;
+          case "reesponse":
+            console.log("Trascript:", message.transcript);
+            console.log("AI:", message.response);
+            break;
+          default:
+            console.log(message);
         }
       } catch {
         console.log(event.data);

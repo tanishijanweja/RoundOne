@@ -1,5 +1,7 @@
 import { WebSocket } from "ws";
 import { DeepgramSTT } from "../providers/stt/DeepgramSTT";
+import { Gemini } from "../providers/llm/Gemini";
+import type { LanguageModel } from "../providers/llm/LanguageModel";
 
 export class InterviewSession {
   constructor(private socket: WebSocket) {}
@@ -7,15 +9,23 @@ export class InterviewSession {
   async start() {
     console.log("Interview session started");
 
-    this.stt.onTranscript((text) => {
+    this.stt.onTranscript(async (text) => {
       console.log("Transcript:", text);
+      try {
+        const response = await this.llm.generateResponse(text);
 
-      this.socket.send(
-        JSON.stringify({
-          type: "transcript",
-          text,
-        }),
-      );
+        console.log("Gemini:", response);
+
+        this.socket.send(
+          JSON.stringify({
+            type: "response",
+            transcript: text,
+            response,
+          }),
+        );
+      } catch (error) {
+        console.error("Gemini error:", error);
+      }
     });
 
     await this.stt.connect();
@@ -64,4 +74,5 @@ export class InterviewSession {
   };
 
   private stt = new DeepgramSTT();
+  private llm = new Gemini();
 }
