@@ -1,40 +1,25 @@
 import express from "express";
-import { PreInterviewBody } from "./types";
 import cors from "cors";
-import { scrapeGithub } from "./scrapers/github";
-import { prisma } from "./db";
-import { JSDocParsingMode } from "typescript";
+import preInterviewRouter from "./routes/preInterview";
+import { createServer } from "http";
+import { setupInterviewSocket } from "./ws/interview";
 
 const app = express();
+
 app.use(express.json());
 app.use(cors());
 
-app.post("/api/v1/pre-interview", async (req, res) => {
-  const { success, data } = PreInterviewBody.safeParse(req.body);
+// Every route inside preInterviewRouter will start with /api/v1
+app.use("/api/v1", preInterviewRouter);
 
-  if (!success) {
-    res.status(411).json({
-      message: "Incorrect body",
-    });
-    return;
-  }
+const server = createServer(app);
 
-  //TODO: url can be very malformed, probably use an SLM herre?
-  const githubUrl = data.github.endsWith("/")
-    ? data.github.slice(0, -1)
-    : data.github;
-
-  const githubUsername = githubUrl.split("/").pop();
-
-  const githubData = await scrapeGithub(githubUsername!);
-
-  const interview = await prisma.interview.create({
-    data: {
-      githubMetadata: JSON.stringify(githubData),
-      status: "Pre",
-    },
-  });
-
-  res.json({ id: interview.id });
+server.on("upgrade", (req) => {
+  console.log("Upgrade request:", req.url);
 });
-app.listen(3001);
+
+setupInterviewSocket(server);
+
+server.listen(3001, () => {
+  console.log("Backend running on port 3001");
+});

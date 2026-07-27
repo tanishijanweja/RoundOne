@@ -1,9 +1,16 @@
-import { serve } from "bun";
+import { serve, file } from "bun";
 import index from "./index.html";
-
+console.log(import.meta.dir);
 const server = serve({
   routes: {
     // Serve index.html for all unmatched routes.
+    "/pcm-processor.js": () => {
+      return new Response(file(`${import.meta.dir}/audio/pcm-processor.js`), {
+        headers: {
+          "Content-Type": "application/javascript",
+        },
+      });
+    },
     "/*": index,
 
     "/api/hello": {
@@ -21,7 +28,7 @@ const server = serve({
       },
     },
 
-    "/api/hello/:name": async req => {
+    "/api/hello/:name": async (req) => {
       const name = req.params.name;
       return Response.json({
         message: `Hello, ${name}!`,
