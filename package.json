@@ -34,6 +34,7 @@
     "@types/cors": "^2.8.19",
     "axios": "^1.18.1",
     "cors": "^2.8.6",
+    "elevenlabs": "^1.59.0",
     "https-proxy-agent": "^9.1.0",
     "pg": "^8.22.0",
     "sonner": "^2.0.7"
